@@ -15,26 +15,55 @@ tags = {
 
 #define subnet module
 
-module "project_subnet" {
+module "subnet" {
 
     source = "./modules/subnet"
-    publicsubnet1_cidr_block = var.publicsubnet1_cidr_block
-    publicsubnet2_cidr_block = var.publicsubnet2_cidr_block
-    privatesubnet1_cidr_block = var.privatesubnet1_cidr_block
-    privatesubnet2_cidr_block = var.privatesubnet2_cidr_block
-    avail_zone1 = var.avail_zone1
-    avail_zone2 = var.avail_zone2
+
+    private_subnets    = var.private_subnets
+    public_subnets     = var.public_subnets
+    avail_zone = var.avail_zone
     vpc_id = aws_vpc.projectvpc.id
     env_prefix = var.env_prefix
 
 }
+#define security group module
 
-module "ecs_application" {
+module "security_groups" {
+  source         = "./modules/security-groups"
+  vpc_id         = aws_vpc.projectvpc.id
+  env_prefix     = var.env_prefix
+  container_port = var.container_port
+}
+#define Application Load Balancer module
+module "alb" {
+  source              = "./modules/alb"
+  vpc_id              = aws_vpc.projectvpc.id
+  subnets             = module.subnet.public_subnets
+  env_prefix          = var.env_prefix
+  alb_security_groups = [module.security_groups.alb]
+ // alb_tls_cert_arn    = var.tsl_certificate_arn
+  health_check_path   = var.health_check_path
+}
 
-    source = "./modules/application"
-    
-    avail_zone1 = var.avail_zone1
-    vpc_id = aws_vpc.projectvpc.id
-    env_prefix = var.env_prefix
-
+module "ecs" {
+  source                      = "./modules/ecs"
+  subnets                     = module.subnet.private_subnets
+  aws_alb_target_group_arn    = module.alb.aws_alb_target_group_arn
+  alb_listener                = module.alb.alb_listener
+  security_group              = [module.security_groups.ecs_tasks]
+  env_prefix                  = var.env_prefix
+ /*
+  container_port              = var.container_port
+  container_cpu               = var.container_cpu
+  container_memory            = var.container_memory
+  service_desired_count       = var.service_desired_count
+  container_environment = [
+    { name = "LOG_LEVEL",
+    value = "DEBUG" },
+    { name = "PORT",
+    value = var.container_port }
+  ]
+  container_secrets      = module.secrets.secrets_map
+  aws_ecr_repository_url = module.ecr.aws_ecr_repository_url
+  container_secrets_arns = module.secrets.application_secrets_arn*/
 }

@@ -1,30 +1,18 @@
 # 1. create public subnet in vpc with cidr block and tag
-resource "aws_subnet" "public_subnet1" {
-    vpc_id = var.vpc_id
-    cidr_block = var.publicsubnet1_cidr_block
-    availability_zone = var.avail_zone1
-    map_public_ip_on_launch = true
+resource "aws_subnet" "public" {
+  vpc_id                  = var.vpc_id
+  cidr_block              = element(var.public_subnets, count.index)
+  availability_zone       = element(var.avail_zone, count.index)
+  count                   = length(var.public_subnets)
+  map_public_ip_on_launch = true
     tags = {
-        Name: "${var.env_prefix}-publicsubnet-1"
+        Name: "${var.env_prefix}-publicsubnet-${format("%03d", count.index+1)}"
         SubnetType = "public"
     }
-  
 }
-resource "aws_subnet" "public_subnet2" {
-    vpc_id = var.vpc_id
-    cidr_block = var.publicsubnet2_cidr_block
-    availability_zone = var.avail_zone2
-    map_public_ip_on_launch = true
-    tags = {
-        Name: "${var.env_prefix}-publicsubnet-2"
-        SubnetType = "public"
-    }
-  
-}
-
 # create route table using internet gate way
 
-resource "aws_route_table" "my_route_table" {
+resource "aws_route_table" "public_route_table" {
  vpc_id = var.vpc_id
  route {
      cidr_block = "0.0.0.0/0" # define all traffic 
@@ -44,72 +32,67 @@ resource "aws_internet_gateway" "proj_igw" {
 
 # create association for route traffic in subnet 
 
-resource "aws_route_table_association" "a-rtb-subnet1" {
-    subnet_id = aws_subnet.public_subnet1.id
-    route_table_id = aws_route_table.my_route_table.id
-}
-resource "aws_route_table_association" "a-rtb-subnet2" {
-    subnet_id = aws_subnet.public_subnet2.id
-    route_table_id = aws_route_table.my_route_table.id
-
+resource "aws_route_table_association" "public-rta" {
+    count          = length(var.public_subnets)
+    subnet_id      = element(aws_subnet.public.*.id, count.index)
+    route_table_id = aws_route_table.public_route_table.id
 }
 
-# 2. create private subnet in vpc with cidr block and tag
-resource "aws_subnet" "private_subnet1" {
-    vpc_id = var.vpc_id
-    cidr_block = var.privatesubnet1_cidr_block
-    availability_zone = var.avail_zone1
-    map_public_ip_on_launch = false
-    tags = {
-        Name: "${var.env_prefix}-privatesubnet-1"
+resource "aws_subnet" "private" {
+  vpc_id            = var.vpc_id
+  cidr_block        = element(var.private_subnets, count.index)
+  availability_zone = element(var.avail_zone, count.index)
+  count             = length(var.private_subnets)
+  tags = {
+        Name: "${var.env_prefix}-privatesubnet-${format("%03d", count.index+1)}"
         SubnetType = "private"
     }
-  
 }
-resource "aws_subnet" "private_subnet2" {
-    vpc_id = var.vpc_id
-    cidr_block = var.privatesubnet2_cidr_block
-    availability_zone = var.avail_zone2
-    map_public_ip_on_launch = false
-    tags = {
-        Name: "${var.env_prefix}-privatesubnet-2"
-        SubnetType = "private"
-    }
-  
-}
-
+# create route table for private subnet
 resource "aws_route_table" "private" {
+  count  = length(var.private_subnets)
   vpc_id = var.vpc_id
   tags = {
       Name: "${var.env_prefix}-privaterRTB"
   }
 }
+# create association for route traffic in private subnet 
 
-resource "aws_route_table_association" "private1" {
-  subnet_id      = aws_subnet.private_subnet1.id
-  route_table_id = aws_route_table.private.id
-}
-resource "aws_route_table_association" "private2" {
-  subnet_id     = aws_subnet.private_subnet2.id
-  route_table_id = aws_route_table.private.id
+resource "aws_route_table_association" "private" {
+  count          = length(var.private_subnets)
+  subnet_id      = element(aws_subnet.private.*.id, count.index)
+  route_table_id = element(aws_route_table.private.*.id, count.index)
 }
 
-resource "aws_eip" "nat_eip1" {
+# create elastic ip for NAT gateway to connect internet gateway
+
+resource "aws_eip" "nat_eip" {
+  count = length(var.private_subnets)
   vpc        = true
   depends_on = [aws_internet_gateway.proj_igw]
 }
-
-resource "aws_nat_gateway" "nat1" {
-  allocation_id = aws_eip.nat_eip1.id
-  subnet_id     = aws_subnet.public_subnet1.id
+# create NAT gateway in public subnet1
+resource "aws_nat_gateway" "main" {
+  count         = length(var.private_subnets)
+  allocation_id = element(aws_eip.nat_eip.*.id, count.index)
+  subnet_id     = element(aws_subnet.public.*.id, count.index)
   depends_on    = [aws_internet_gateway.proj_igw]
   tags = {
-    Name        = "${var.env_prefix}-nat1"
+    Name        = "${var.env_prefix}-main"
   }
 }
-
+# create route to private subnet using NAT Gateway
 resource "aws_route" "private_nat_gateway" {
-  route_table_id         = aws_route_table.private.id
+  count                  = length(compact(var.private_subnets))
+  route_table_id         = element(aws_route_table.private.*.id, count.index)
   destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id         = aws_nat_gateway.nat1.id
+  nat_gateway_id         = element(aws_nat_gateway.main.*.id, count.index)
+}
+
+output "public_subnets" {
+  value = aws_subnet.public
+}
+
+output "private_subnets" {
+  value = aws_subnet.private
 }
