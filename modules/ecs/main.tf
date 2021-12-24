@@ -29,7 +29,7 @@ resource "aws_ecs_task_definition" "main" {
 
   tags = {
     Name        = "${var.env_prefix}-task"
-    //Environment = var.environment
+   
   }
 }
 
@@ -37,7 +37,7 @@ resource "aws_ecs_cluster" "main" {
   name = "${var.env_prefix}-cluster"
   tags = {
     Name        = "${var.env_prefix}-cluster"
-   // Environment = var.environment
+  
   }
 }
 
