@@ -50,13 +50,13 @@ module "ecs" {
   subnets                     = module.subnet.private_subnets
   aws_alb_target_group_arn    = module.alb.aws_alb_target_group_arn
   region                      = var.region
- // alb_listener                = module.alb.alb_listener
   ecs_service_security_groups = [module.security_groups.ecs_tasks]
   env_prefix                  = var.env_prefix
   container_port              = var.container_port
   container_cpu               = var.container_cpu
   container_memory            = var.container_memory
   service_desired_count       = var.service_desired_count
+  alb_listener                = module.alb.alb_listener
   container_environment = [
     { name = "LOG_LEVEL",
     value = "DEBUG" },

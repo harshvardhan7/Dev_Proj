@@ -1,10 +1,6 @@
 resource "aws_ecr_repository" "main" {
-  name                 = "${var.env_prefix}-repo"
+  name                 = "Appimage"
   image_tag_mutability = "MUTABLE"
-
-  image_scanning_configuration {
-    scan_on_push = false
-  }
 }
 
 resource "aws_ecr_lifecycle_policy" "main" {

@@ -33,7 +33,7 @@ variable "container_image" {
 variable "aws_alb_target_group_arn" {
   description = "ARN of the alb target group"
 }
-
+variable alb_listener {}
 variable "service_desired_count" {
   description = "Number of services running in parallel"
 }
@@ -51,3 +51,4 @@ variable "container_secrets" {
 variable "container_secrets_arns" {
   description = "ARN for secrets"
 }*/
+
