@@ -1,20 +1,12 @@
 #ecr repository name
-/*data "aws_ecr_repository" "ecr_repo" {
+data "aws_ecr_repository" "ecr_repo" {
   name = "game"
-}*/
-
-resource "aws_ecr_repository" "ecr_repo" {
-  name = "ecr-repo"
-  tags = {
-    Name = "${var.env_prefix}-ecr-repo"
-  }
 }
-
 #fetch the tag of most recently pushed image
 data "external" "tags_of_most_recently_pushed_image" {
   program = [
     "aws", "ecr", "describe-images",
-    "--repository-name",aws_ecr_repository.ecr_repo.name,
+    "--repository-name",data.aws_ecr_repository.ecr_repo.name,
     "--query", "{\"tags\": to_string(sort_by(imageDetails,& imagePushedAt)[-1].imageTags)}",
     "--region", var.ecr_repo_region,
   ]
@@ -35,7 +27,7 @@ data "template_file" "app" {
     app_port       = var.app_port
     fargate_cpu    = var.fargate_cpu
     fargate_memory = var.fargate_memory
-    aws_region     = var.aws_region
+    aws_region     = var.ecr_repo_region
   }
 }
 

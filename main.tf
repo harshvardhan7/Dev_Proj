@@ -52,6 +52,7 @@ module "ecs" {
   alb_listener                = module.alb.alb_listener
   security_group              = [module.security_groups.ecs_tasks]
   env_prefix                  = var.env_prefix
+  ecr_repo_region             = var.region
  /*
   container_port              = var.container_port
   container_cpu               = var.container_cpu

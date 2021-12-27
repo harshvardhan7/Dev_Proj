@@ -30,15 +30,11 @@ variable "fargate_memory" {
   default     = "2048"
 }
 
-variable "aws_region" {
+variable "ecr_repo_region" {
   description = "The AWS region things are created in"
   default     = "ap-south-1"
 }
 
-variable "ecr_repo_region" {
-  description = "Region where the image is present"
-  default = "ap-south-1"
-}
 variable "subnets" {
   description = "Comma separated list of subnet IDs"
 }

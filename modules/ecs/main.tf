@@ -37,5 +37,5 @@ resource "aws_ecs_service" "ecs_service" {
     }
 
     depends_on = [var.alb_listener,
-                   aws_iam_role_policy_attachment.ecs_task_execution_role]
+                   aws_iam_role_policy_attachment.ecs-task-execution-role-policy-attachment]
 }
