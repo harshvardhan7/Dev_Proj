@@ -6,12 +6,12 @@ variable private_subnets{}
 
 variable "service_desired_count" {
   description = "Number of tasks running in parallel"
-  default     = 2
+  default     = 3
 }
 
 variable "container_port" {
   description = "The port where the Docker is exposed"
-  default     = 8000
+  default     = 80
 }
 
 variable "container_cpu" {
@@ -24,11 +24,11 @@ variable "container_memory" {
   default     = 512
 }
 
+/*
 variable "health_check_path" {
   description = "Http path for task health check"
-  default     = "/health"
+  default     = "/"
 }
-/*
 variable "tsl_certificate_arn" {
   description = "The ARN of the certificate that the ALB uses for https"
 }*/

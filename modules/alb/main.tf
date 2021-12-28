@@ -25,7 +25,7 @@ resource "aws_alb_target_group" "main" {
     protocol            = "HTTP"
     matcher             = "200"
     timeout             = "3"
-    path                = var.health_check_path
+    path                = "/"
     unhealthy_threshold = "2"
   }
 
@@ -36,11 +36,11 @@ resource "aws_alb_target_group" "main" {
 
 # Redirect to https listener
 resource "aws_alb_listener" "http" {
-  load_balancer_arn = aws_lb.main.id
-  port              = 80
+  load_balancer_arn = aws_lb.main.arn
+  port              = "80"
   protocol          = "HTTP"
     default_action {
-        target_group_arn = aws_alb_target_group.main.id
+        target_group_arn = aws_alb_target_group.main.arn
         type             = "forward"
     }
  /* default_action {

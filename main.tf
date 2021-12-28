@@ -42,7 +42,7 @@ module "alb" {
   env_prefix          = var.env_prefix
   alb_security_groups = [module.security_groups.alb]
  // alb_tls_cert_arn    = var.tsl_certificate_arn
-  health_check_path   = var.health_check_path
+ //health_check_path   = var.health_check_path
 }
 
 module "ecs" {

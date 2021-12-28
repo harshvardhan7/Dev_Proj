@@ -14,14 +14,17 @@ resource "aws_subnet" "public" {
 
 resource "aws_route_table" "public_route_table" {
  vpc_id = var.vpc_id
- route {
-     cidr_block = "0.0.0.0/0" # define all traffic 
-     gateway_id = aws_internet_gateway.proj_igw.id
- }
  tags = {
      Name: "${var.env_prefix}-rt"
  }
 }
+
+resource "aws_route" "public" {
+  route_table_id         = aws_route_table.public_route_table.id
+  destination_cidr_block = "0.0.0.0/0"
+  gateway_id             = aws_internet_gateway.proj_igw.id
+}
+
 # create internet gateway for internet traffic in vpc
 resource "aws_internet_gateway" "proj_igw" {
   vpc_id = var.vpc_id  
@@ -69,9 +72,12 @@ resource "aws_route_table_association" "private" {
 resource "aws_eip" "nat_eip" {
   count = length(var.private_subnets)
   vpc        = true
-  depends_on = [aws_internet_gateway.proj_igw]
+ // depends_on = [aws_internet_gateway.proj_igw]
+ tags = {
+    Name        = "${var.env_prefix}-nat-eip"
+    }
 }
-# create NAT gateway in public subnet1
+# create NAT gateway in public subnet
 resource "aws_nat_gateway" "main" {
   count         = length(var.private_subnets)
   allocation_id = element(aws_eip.nat_eip.*.id, count.index)
