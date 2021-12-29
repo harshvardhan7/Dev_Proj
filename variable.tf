@@ -24,12 +24,4 @@ variable "container_memory" {
   default     = 512
 }
 
-/*
-variable "health_check_path" {
-  description = "Http path for task health check"
-  default     = "/"
-}
-variable "tsl_certificate_arn" {
-  description = "The ARN of the certificate that the ALB uses for https"
-}*/
 variable "region" {}
