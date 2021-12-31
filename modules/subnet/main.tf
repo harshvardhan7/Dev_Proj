@@ -15,7 +15,7 @@ resource "aws_subnet" "public" {
 resource "aws_route_table" "public_route_table" {
  vpc_id = var.vpc_id
  tags = {
-     Name: "${var.env_prefix}-rt"
+     Name: "${var.env_prefix}-public-rt"
  }
 }
 
@@ -56,12 +56,12 @@ resource "aws_route_table" "private" {
   count  = length(var.private_subnets)
   vpc_id = var.vpc_id
   tags = {
-      Name: "${var.env_prefix}-privaterRTB"
+      Name: "${var.env_prefix}-private-rt"
   }
 }
 # create association for route traffic in private subnet 
 
-resource "aws_route_table_association" "private" {
+resource "aws_route_table_association" "private-rta" {
   count          = length(var.private_subnets)
   subnet_id      = element(aws_subnet.private.*.id, count.index)
   route_table_id = element(aws_route_table.private.*.id, count.index)
@@ -84,7 +84,7 @@ resource "aws_nat_gateway" "main" {
   subnet_id     = element(aws_subnet.public.*.id, count.index)
   depends_on    = [aws_internet_gateway.proj_igw]
   tags = {
-    Name        = "${var.env_prefix}-main"
+    Name        = "${var.env_prefix}-main-NAT"
   }
 }
 # create route to private subnet using NAT Gateway
