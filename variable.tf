@@ -25,3 +25,6 @@ variable "container_memory" {
 }
 
 variable "region" {}
+
+#variable "mongouser" {}
+#variable "mongopass" {}

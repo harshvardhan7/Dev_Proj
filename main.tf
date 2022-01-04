@@ -57,3 +57,21 @@ module "ecs" {
   env_prefix                  = var.env_prefix
   ecr_repo_region             = var.region
 }
+
+
+
+module "vpcendpoint" {
+  source              = "./modules/vpcendpoint"
+  vpc_id              = aws_vpc.projectvpc.id
+  public_subnets     = module.subnet.public_subnets
+  route_table_id      = module.subnet.route_table
+  
+  /*
+  mongouser           = var.mongouser
+  mongopass           = var.mongopass
+  vpc_id              = aws_vpc.projectvpc.id
+  subnets             = module.subnet.public_subnets
+  security_groups     = [module.security_groups.alb]
+*/
+}
+
