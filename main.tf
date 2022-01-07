@@ -58,12 +58,12 @@ module "ecs" {
   ecr_repo_region             = var.region
 }
 
+#define vpcendpoint module
 
 
 module "vpcendpoint" {
   source              = "./modules/vpcendpoint"
   vpc_id              = aws_vpc.projectvpc.id
-  public_subnets     = module.subnet.public_subnets
   route_table_id      = module.subnet.route_table
   
   /*

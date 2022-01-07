@@ -1,8 +1,6 @@
 
 variable vpc_id {}
 
-variable public_subnets {}
-
 variable "route_table_id" {}
 
 

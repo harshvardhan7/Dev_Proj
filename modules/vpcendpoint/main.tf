@@ -2,19 +2,12 @@
 
 resource "aws_vpc_endpoint" "s3" {
   vpc_id       = var.vpc_id
+  vpc_endpoint_type   = "Gateway"
   service_name = "com.amazonaws.ap-south-1.s3"
-
-}
-# associate route table with VPC endpoint
-resource "aws_vpc_endpoint_route_table_association" "Private_route_table_association" {
-  count         = length(var.public_subnets.*.id)
-  route_table_id  = var.route_table_id
-  vpc_endpoint_id = aws_vpc_endpoint.s3.id
-}
-
-
+  route_table_ids  = [var.route_table_id]
+  }
+  
 /*
-
 terraform {
   required_providers {
     mongodbatlas = {
