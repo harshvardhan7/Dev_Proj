@@ -1,4 +1,4 @@
-# 1. create public subnet in vpc with cidr block and tag
+# create public subnet in vpc with cidr block and tag
 resource "aws_subnet" "public" {
   vpc_id                  = var.vpc_id
   cidr_block              = element(var.public_subnets, count.index)

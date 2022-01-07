@@ -1,5 +1,5 @@
 
-
+# create vpc endpoint to access outside vpc 
 resource "aws_vpc_endpoint" "s3" {
   vpc_id       = var.vpc_id
   vpc_endpoint_type   = "Gateway"

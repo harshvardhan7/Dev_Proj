@@ -43,6 +43,7 @@ variable "aws_alb_target_group_arn" {
   description = "ARN of the alb target group"
 }
 variable alb_listener {}
+
 variable security_group {}
 
 variable env_prefix {}

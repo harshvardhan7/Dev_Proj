@@ -1,5 +1,3 @@
-
-
 variable env_prefix {}
 
 variable "subnets" {

@@ -1,10 +1,11 @@
+#define provider
 
 provider "aws" {
     region = "ap-south-1"
 }
 
 
-# 1. create vpc with cidr block and tag  
+# create vpc with cidr block and tag  
 resource "aws_vpc" "projectvpc" {
 cidr_block = var.vpc_cidr_block
 tags = {
