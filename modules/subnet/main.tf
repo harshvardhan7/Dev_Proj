@@ -95,15 +95,3 @@ resource "aws_route" "private_nat_gateway" {
   nat_gateway_id         = element(aws_nat_gateway.main.*.id, count.index)
 }
 
-output "public_subnets" {
-  value = aws_subnet.public
-}
-
-output "private_subnets" {
-  value = aws_subnet.private
-}
-
-output "route_table" {
-  
-  value = aws_route_table.public_route_table.id
-}

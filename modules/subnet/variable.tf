@@ -1,10 +1,19 @@
 
-variable avail_zone {}
+variable "env_prefix" {
+  description = "Define tag name prefix for resources"
+}
+variable "vpc_id" {
+  description = "VPC ID for Infra"
+}
 
-variable vpc_id {}
+variable avail_zone {
+    description = "Availabilty zone for subnets"
+}
 
-variable env_prefix {}
+variable private_subnets {
+    description = "CIDR Block for private subnet"
+}
 
-variable private_subnets {}
-
-variable public_subnets {}
+variable public_subnets {
+    description = "CIDR Block for public subnet"
+}

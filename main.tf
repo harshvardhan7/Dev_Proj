@@ -1,4 +1,4 @@
-#define provider
+#  Declare provider
 
 provider "aws" {
     region = "ap-south-1"
@@ -14,7 +14,7 @@ tags = {
 
 }
 
-#define subnet module
+# Declare subnet module
 
 module "subnet" {
 
@@ -28,7 +28,7 @@ module "subnet" {
 
 }
 
-#define security group module
+# Declare security group module
 
 module "security_groups" {
   source         = "./modules/security-groups"
@@ -37,7 +37,7 @@ module "security_groups" {
   container_port = var.container_port
 }
 
-#define Application Load Balancer module
+# Declare Application Load Balancer module
 
 module "alb" {
   source              = "./modules/alb"
@@ -47,7 +47,7 @@ module "alb" {
   alb_security_groups = [module.security_groups.alb]
 }
 
-#define ECS module
+# Declare ECS module
 
 module "ecs" {
   source                      = "./modules/ecs"
@@ -59,7 +59,7 @@ module "ecs" {
   ecr_repo_region             = var.region
 }
 
-#define vpcendpoint module
+# Declare vpcendpoint module
 
 
 module "vpcendpoint" {

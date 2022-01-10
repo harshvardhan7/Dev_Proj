@@ -42,8 +42,15 @@ variable "subnets" {
 variable "aws_alb_target_group_arn" {
   description = "ARN of the alb target group"
 }
-variable alb_listener {}
+variable "alb_listener" {
+  description = "Listener value for loadbalancer"
+}
 
-variable security_group {}
+variable "security_group" {
+  description = "Security group for ECS Task"
+}
 
-variable env_prefix {}
+
+variable "env_prefix" {
+  description = "Define tag name prefix for resources"
+}

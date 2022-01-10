@@ -1,7 +1,11 @@
 
-variable vpc_id {}
+variable "vpc_id" {
+  description = "VPC ID for Infra"
+}
 
-variable "route_table_id" {}
+variable "route_table_id" {
+  description = " Route table id of public subnet to connect S3 bucket"
+}
 
 
 /*
