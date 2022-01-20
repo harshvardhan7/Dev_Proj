@@ -14,7 +14,7 @@ resource "aws_lb" "main" {
 
 resource "aws_alb_target_group" "main" {
   name        = "${var.env_prefix}-tg"
-  port        = 80
+  port        = var.game_port
   protocol    = "HTTP"
   vpc_id      = var.vpc_id
   target_type = "ip"
@@ -34,15 +34,16 @@ resource "aws_alb_target_group" "main" {
   }
 }
 
+
 # Redirect to https listener
 resource "aws_alb_listener" "http" {
   load_balancer_arn = aws_lb.main.arn
   port              = "80"
   protocol          = "HTTP"
     default_action {
-        target_group_arn = aws_alb_target_group.main.arn
+       target_group_arn = aws_alb_target_group.main.arn
         type             = "forward"
     }
-
 }
+
 
